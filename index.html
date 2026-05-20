@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Habits Quiz for Kids Ages 9-12</title>
+<meta name="description" content="A fun and friendly quiz to help kids ages 9-12 understand their digital habits. Find out if you're a Digital Explorer, Digital Thinker, or Digital Champion.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f7f5ff;
+    --surface: #ffffff;
+    --dark: #2d1b69;
+    --mid: #5a4a8a;
+    --light: #9a8abc;
+    --border: #e0d8f5;
+    --accent: #F5DF4D;
+    --bg2: #f0ebff;
+  }
+  body { font-family: 'DM Sans', -apple-system, sans-serif; background: var(--bg); color: var(--dark); min-height: 100vh; }
+  header { background: #2d1b69; color: white; padding: 2.5rem 2rem 2rem; text-align: center; border-bottom: 4px solid #F5DF4D; }
+  header .label { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: #F5DF4D; margin-bottom: 0.75rem; }
+  header h1 { font-family: 'DM Serif Display', serif; font-size: clamp(22px, 5vw, 36px); font-weight: 400; margin-bottom: 0.5rem; color: #ffffff; line-height: 1.25; }
+  header p { font-size: 13px; color: rgba(255,255,255,0.7); max-width: 480px; margin: 0 auto; line-height: 1.6; }
+  .container { max-width: 620px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+  .progress-wrap { margin-bottom: 2rem; }
+  .progress-label { font-size: 12px; color: var(--light); margin-bottom: 6px; display: flex; justify-content: space-between; }
+  .progress-bar { height: 4px; background: var(--border); border-radius: 2px; }
+  .progress-fill { height: 4px; background: #2d1b69; border-radius: 2px; transition: width 0.3s ease; }
+  .question-block { display: none; }
+  .question-block.active { display: block; animation: fadeIn 0.25s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .cat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--light); margin-bottom: 8px; background: var(--bg2); display: inline-block; padding: 3px 10px; border-radius: 20px; }
+  .question-text { font-size: 18px; font-weight: 500; color: var(--dark); margin: 10px 0 1.5rem; line-height: 1.5; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option-btn {
+    text-align: left; padding: 14px 16px;
+    border: 1.5px solid var(--border); border-radius: 10px;
+    background: var(--surface); color: var(--dark);
+    font-size: 14px; cursor: pointer; line-height: 1.55;
+    transition: border-color 0.15s, background 0.15s;
+    font-family: inherit;
+  }
+  .option-btn:hover { border-color: #2d1b69; background: var(--bg2); }
+  .option-btn.selected { border-color: #2d1b69; background: var(--bg2); font-weight: 500; }
+  .nav-row { display: flex; justify-content: space-between; align-items: center; margin-top: 1.75rem; }
+  .nav-btn {
+    padding: 10px 22px; border: 1.5px solid var(--border); border-radius: 8px;
+    background: transparent; color: var(--dark); font-size: 13px;
+    cursor: pointer; font-family: inherit; transition: background 0.15s;
+  }
+  .nav-btn:hover { background: var(--bg2); }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; }
+  .nav-btn.primary { background: #2d1b69; color: white; border-color: #2d1b69; }
+  .nav-btn.primary:hover { opacity: 0.85; }
+  .result-block { display: none; text-align: center; padding: 2rem 0; }
+  .result-block.active { display: block; animation: fadeUp 0.4s ease; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .result-icon { font-size: 64px; margin-bottom: 1rem; }
+  .result-title { font-family: 'DM Serif Display', serif; font-size: 32px; font-weight: 400; color: #2d1b69; margin: 0 0 0.25rem; }
+  .result-subtitle { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--light); margin: 0 0 1.25rem; }
+  .result-desc { font-size: 15px; color: var(--mid); line-height: 1.75; max-width: 480px; margin: 0 auto 1.75rem; }
+  .score-bar { height: 6px; background: var(--border); border-radius: 3px; margin-bottom: 8px; }
+  .score-fill { height: 6px; border-radius: 3px; background: #2d1b69; transition: width 0.7s ease; }
+  .score-labels { font-size: 11px; color: var(--light); display: flex; justify-content: space-between; margin-bottom: 0.5rem; }
+  .score-pct { font-size: 13px; color: var(--light); margin-bottom: 1.5rem; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+  .dim-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 1rem 0 2rem; text-align: left; }
+  .dim-card { background: var(--bg2); border-radius: 10px; padding: 12px 14px; }
+  .dim-card-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--light); margin-bottom: 4px; }
+  .dim-card-value { font-size: 14px; font-weight: 500; color: var(--dark); }
+  .footer-note { text-align: center; font-size: 12px; color: var(--light); margin-top: 3rem; line-height: 1.6; }
+  .footer-note a { color: var(--mid); }
+  .star { color: #F5DF4D; font-size: 20px; }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="label">⭐ Digital Habits Quiz for Kids</p>
+  <h1>Digital Habits Quiz<br>for Kids Ages 9–12</h1>
+  <p>10 quick questions. Find out how you use screens — and what kind of digital thinker you are.</p>
+</header>
+
+<div class="container">
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span id="progress-label">Question 1 of 10</span>
+      <span id="progress-pct">10%</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width: 10%"></div></div>
+  </div>
+
+  <div id="questions-container"></div>
+  <div class="result-block" id="result-block"></div>
+
+  <p class="footer-note">
+    A free educational tool about digital habits and screen time awareness.<br>
+    <a href="https://recepzerk.github.io" target="_blank">More tools at recepzerk.github.io</a>
+  </p>
+</div>
+
+<script>
+const questions = [
+  {
+    category: "Screen Time Awareness",
+    text: "You sit down to watch one YouTube video. What usually happens next?",
+    options: [
+      { text: "I watch one video and then stop.", score: 3 },
+      { text: "I watch a few more but eventually stop.", score: 2 },
+      { text: "I keep watching and suddenly realize hours have passed.", score: 1 }
+    ]
+  },
+  {
+    category: "Screen Time Awareness",
+    text: "When someone tells you it's time to stop playing, how do you feel?",
+    options: [
+      { text: "Fine — I can stop without any problem.", score: 3 },
+      { text: "A little annoyed, but I stop anyway.", score: 2 },
+      { text: "Really upset — I never want to stop.", score: 1 }
+    ]
+  },
+  {
+    category: "Gaming & YouTube Habits",
+    text: "Do you ever skip meals or sleep because of screen time?",
+    options: [
+      { text: "Never — I always eat and sleep on time.", score: 3 },
+      { text: "Sometimes, but not often.", score: 2 },
+      { text: "Yes, it happens quite a lot.", score: 1 }
+    ]
+  },
+  {
+    category: "Gaming & YouTube Habits",
+    text: "When you are not playing or watching, do you think about it a lot?",
+    options: [
+      { text: "Not really — I think about other things too.", score: 3 },
+      { text: "Sometimes I do.", score: 2 },
+      { text: "Yes, I think about it almost all the time.", score: 1 }
+    ]
+  },
+  {
+    category: "Real Life Balance",
+    text: "What do you do on a typical weekend?",
+    options: [
+      { text: "I spend time outside, with friends, or doing other activities — screens are just a small part.", score: 3 },
+      { text: "I mix screen time with other activities.", score: 2 },
+      { text: "Most of my weekend is spent on screens.", score: 1 }
+    ]
+  },
+  {
+    category: "Real Life Balance",
+    text: "If screens were taken away for a day, how would you feel?",
+    options: [
+      { text: "Fine — there are plenty of other things to do.", score: 3 },
+      { text: "A bit bored, but I would manage.", score: 2 },
+      { text: "Really bored or upset — I wouldn't know what to do.", score: 1 }
+    ]
+  },
+  {
+    category: "Online Safety",
+    text: "If a stranger sent you a message online, what would you do?",
+    options: [
+      { text: "I would ignore it and tell a parent or trusted adult.", score: 3 },
+      { text: "I might read it but wouldn't reply.", score: 2 },
+      { text: "I would probably reply to see what they want.", score: 1 }
+    ]
+  },
+  {
+    category: "Online Safety",
+    text: "Do you know what personal information you should never share online?",
+    options: [
+      { text: "Yes — I know not to share my name, address, school, or phone number.", score: 3 },
+      { text: "I have some idea but I'm not completely sure.", score: 2 },
+      { text: "Not really — I haven't thought about it.", score: 1 }
+    ]
+  },
+  {
+    category: "How Screens Make You Feel",
+    text: "How do you feel after a long time on screens?",
+    options: [
+      { text: "Usually good — relaxed and happy.", score: 3 },
+      { text: "Sometimes fine, sometimes a bit tired or grumpy.", score: 2 },
+      { text: "Often tired, grumpy, or like something is missing.", score: 1 }
+    ]
+  },
+  {
+    category: "How Screens Make You Feel",
+    text: "Has anyone ever told you that you spend too much time on screens?",
+    options: [
+      { text: "No, or only very rarely.", score: 3 },
+      { text: "Yes, a few times.", score: 2 },
+      { text: "Yes, quite often — it sometimes causes arguments.", score: 1 }
+    ]
+  }
+];
+
+const results = {
+  explorer: {
+    icon: "🔭",
+    title: "Digital Explorer",
+    subtitle: "You're learning — and that's great",
+    desc: "You're just starting to learn about your digital habits. That's totally okay — everyone starts somewhere. The fact that you're taking this quiz means you're already thinking about it. Small changes, like taking breaks or going outside more, can make a big difference."
+  },
+  thinker: {
+    icon: "💡",
+    title: "Digital Thinker",
+    subtitle: "You notice a lot — keep going",
+    desc: "You notice a lot about how you use screens — that's a real skill. You have some good habits already, and you're starting to ask the right questions. Keep paying attention to how screens make you feel, and trust yourself when something doesn't feel right."
+  },
+  champion: {
+    icon: "🏆",
+    title: "Digital Champion",
+    subtitle: "You've got this",
+    desc: "You have a strong understanding of your digital habits. You know when to stop, how to stay safe, and how to balance screen time with real life. That's not easy — and it puts you ahead of most people your age. Keep it up."
+  }
+};
+
+const categories = ["Screen Time Awareness", "Gaming & YouTube Habits", "Real Life Balance", "Online Safety", "How Screens Make You Feel"];
+let current = 0;
+let answers = new Array(10).fill(null);
+
+function render() {
+  const container = document.getElementById('questions-container');
+  container.innerHTML = '';
+  questions.forEach((q, i) => {
+    const block = document.createElement('div');
+    block.className = 'question-block' + (i === current ? ' active' : '');
+    block.innerHTML = `
+      <div class="cat-label">${q.category}</div>
+      <div class="question-text">${q.text}</div>
+      <div class="options">
+        ${q.options.map((opt, j) => `<button class="option-btn${answers[i] === j ? ' selected' : ''}" onclick="selectAnswer(${i},${j})">${opt.text}</button>`).join('')}
+      </div>
+      <div class="nav-row">
+        <button class="nav-btn" onclick="current--;render()"${i===0?' disabled':''}>← Back</button>
+        <button class="nav-btn primary" onclick="${i===9?'showResult()':'current++;render()'}"${answers[i]===null?' disabled':''}>${i===9?'See my result ✨':'Next →'}</button>
+      </div>`;
+    container.appendChild(block);
+  });
+  const pct = Math.round((current + 1) / 10 * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-pct').textContent = pct + '%';
+  document.getElementById('progress-label').textContent = 'Question ' + (current + 1) + ' of 10';
+}
+
+function selectAnswer(qi, oi) { answers[qi] = oi; render(); }
+
+function showResult() {
+  const total = answers.reduce((s, a, i) => a !== null ? s + questions[i].options[a].score : s, 0);
+  const pct = Math.round((total / 30) * 100);
+  const key = pct <= 44 ? 'explorer' : pct <= 72 ? 'thinker' : 'champion';
+  const r = results[key];
+
+  const catScores = {};
+  categories.forEach(c => catScores[c] = { total: 0, count: 0 });
+  questions.forEach((q, i) => {
+    if (answers[i] !== null) {
+      catScores[q.category].total += questions[i].options[answers[i]].score;
+      catScores[q.category].count++;
+    }
+  });
+
+  document.getElementById('questions-container').style.display = 'none';
+  document.querySelector('.progress-wrap').style.display = 'none';
+
+  const rb = document.getElementById('result-block');
+  rb.className = 'result-block active';
+  rb.innerHTML = `
+    <div class="result-icon">${r.icon}</div>
+    <div class="result-title">${r.title}</div>
+    <div class="result-subtitle">${r.subtitle}</div>
+    <div class="result-desc">${r.desc}</div>
+    <hr class="divider">
+    <div class="score-labels"><span>Explorer</span><span>Thinker</span><span>Champion</span></div>
+    <div class="score-bar"><div class="score-fill" id="sf" style="width:0%"></div></div>
+    <div class="score-pct">Your score: ${pct}%</div>
+    <hr class="divider">
+    <div style="text-align:left;font-size:13px;color:var(--mid);font-weight:500;margin-bottom:10px;">How you did in each area</div>
+    <div class="dim-grid">
+      ${categories.map(c => {
+        const s = catScores[c];
+        const dp = s.count > 0 ? Math.round(s.total / (s.count * 3) * 100) : 0;
+        const lbl = dp >= 67 ? '⭐ Great' : dp >= 34 ? '👍 Good' : '💪 Keep going';
+        return `<div class="dim-card"><div class="dim-card-label">${c}</div><div class="dim-card-value">${lbl}</div></div>`;
+      }).join('')}
+    </div>
+    <button class="nav-btn" onclick="restart()" style="margin-top:1rem;">Try again</button>
+  `;
+  setTimeout(() => { document.getElementById('sf').style.width = pct + '%'; }, 100);
+}
+
+function restart() {
+  current = 0;
+  answers = new Array(10).fill(null);
+  document.getElementById('questions-container').style.display = 'block';
+  document.querySelector('.progress-wrap').style.display = 'block';
+  document.getElementById('result-block').className = 'result-block';
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
